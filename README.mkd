@@ -23,7 +23,7 @@ Install:
 ~~~ { .sh }
 $ mkdir -p ~/.mikutter/plugin
 $ cd ~/.mikutter/plugin
-$ git clone git://github.com/mikoto2000/mikutter-voicetext.git voicetext
+$ git clone git://github.com/mikoto2000/mikutter_voicetext.git voicetext
 $ cd [PATH_TO_MIKUTTER]
 $ bundle install --path=vendor/bundle
 ~~~
