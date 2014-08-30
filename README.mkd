@@ -1,0 +1,53 @@
+voicetext
+=========
+
+VoiceText Web API へリクエストを投げる機能を追加します。
+
+Usage:
+------
+
+ツイートを右クリックし、VoiceText を選択してください。ツイートを読み上げます。
+
+Requirements:
+-------------
+
+- 音声再生コマンド(設定で変更可能)
+    - aplay
+
+Install:
+--------
+
+以下のコマンドをターミナルで実行し、 mikutter を再起動してください。
+[PATH_TO_MIKUTTER] は、 mikutter をインストールしたパスに置き換えて実行してください。
+
+~~~ { .sh }
+$ mkdir -p ~/.mikutter/plugin
+$ cd ~/.mikutter/plugin
+$ git clone git://github.com/mikoto2000/mikutter-voicetext.git voicetext
+$ cd [PATH_TO_MIKUTTER]
+$ bundle install --path=vendor/bundle
+~~~
+
+Recommendation:
+---------------
+
+下記プラグインを導入すると、読み上げる内容がよりリッチになります。
+
+- [mikoto2000/mikutter_scrap_nhk_news : https://github.com/mikoto2000/mikutter_scrap_nhk_news](https://github.com/mikoto2000/mikutter_scrap_nhk_news)
+    - 投稿者が nhk_news の場合に、記事本文を読み上げるようになります。
+- [mikoto2000/mikutter_scrap_47_news : https://github.com/mikoto2000/mikutter_scrap_47_news](https://github.com/mikoto2000/mikutter_scrap_47_news)
+    - 投稿者が 47news の場合に、記事本文を読み上げるようになります。
+
+License:
+--------
+
+Copyright (C) 2014 mikoto2000
+
+This software is released under the MIT License, see LICENSE
+
+このソフトウェアは MIT ライセンスの下で公開されています。 LICENSE を参照してください。
+
+Author:
+-------
+
+mikoto2000 <mikoto2000@gmail.com>

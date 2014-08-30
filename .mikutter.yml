@@ -1,0 +1,9 @@
+---
+slug: :voicetext
+depends:
+  mikutter: 3.0.4
+  plugin: []
+version: '1.0'
+author: 
+name: voicetext
+description: VoiceText Web API へリクエストを投げる機能を追加する
