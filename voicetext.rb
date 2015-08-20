@@ -4,6 +4,8 @@ require "open3"
 require "workers"
 require 'voicetext'
 
+OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:verify_mode] = OpenSSL::SSL::VERIFY_NONE
+
 Plugin.create(:voicetext) do
 
     # 馬鹿にしか見えない行らしいですよ
@@ -12,10 +14,15 @@ Plugin.create(:voicetext) do
     # 読み上げ処理のキュー
     @pool = nil
 
+    # windows フラグ
+    @is_win = false
+
     # config に設定項目を追加
     settings("VoiceText") do
         settings("基本設定") do
-            input '音声再生コマンド', :voicetext_read_command
+            if !@is_win
+                input '音声再生コマンド', :voicetext_read_command
+            end
             input '作業ディレクトリ', :voicetext_working_directory
         end
         settings("読み上げ設定") do
@@ -29,8 +36,13 @@ Plugin.create(:voicetext) do
     end
 
     on_boot do |service|
+        # windows フラグの設定
+        if ( RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/ )
+            @is_win = true
+        end
+
         # 設定のデフォルト値設定
-        UserConfig[:voicetext_read_command] ||= "aplay"
+        UserConfig[:voicetext_read_command] ||= "aplay" if !@is_win
         UserConfig[:voicetext_working_directory] ||= "~/tmp"
 
         # VoiceText のオプション
@@ -89,13 +101,22 @@ Plugin.create(:voicetext) do
         }
 
         # 1. VoiceText へリクエストを投げる
-        voice = @voicetext.tts(text, speaker, option)
+        begin
+            voice = @voicetext.tts(text, speaker, option)
+        rescue => e
+            puts e
+        end
 
         # 2. 結果の WAV を一時ファイルに保存
         tmp_voice_file = create_tmp_file voice
 
-        # 3. 外部プログラムで音声再生
-        read = "#{UserConfig[:voicetext_read_command]} #{tmp_voice_file} 2> /dev/null"
+        # 3. 音声再生
+        if @is_win
+            read = "powershell -Command \"$p=New-Object Media.SoundPlayer('#{tmp_voice_file}'); $p.PlaySync()\""
+        else
+            read = "#{UserConfig[:voicetext_read_command]} #{tmp_voice_file} 2> /dev/null"
+        end
+
         Open3.capture3("#{read}")
 
         # 一時ファイル削除
@@ -112,6 +133,7 @@ Plugin.create(:voicetext) do
         # 一時ファイル作成
         f = File.open(tmp_voice_file,'wb')
         f.write(voice)
+        f.close
 
         return tmp_voice_file
     end
